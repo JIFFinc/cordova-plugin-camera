@@ -20,15 +20,19 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.LOG;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -209,7 +213,7 @@ public class FileHelper {
         }
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
-    
+
     /**
      * Returns the mime type of the data specified by the given URI string.
      *
@@ -227,5 +231,20 @@ public class FileHelper {
         }
 
         return mimeType;
+    }
+
+    public static String getBase64(Bitmap bitmap){
+        ByteArrayOutputStream jpeg_data = new ByteArrayOutputStream();
+        String js_out = "";
+        try {
+            if (bitmap.compress(Bitmap.CompressFormat.JPEG, 100, jpeg_data)) {
+                byte[] code = jpeg_data.toByteArray();
+                byte[] output = Base64.encode(code, Base64.NO_WRAP);
+                js_out = new String(output);
+            }
+        } catch (Exception e) {
+            Log.e("Jiff", "Fail to process base64");
+        }
+        return js_out;
     }
 }
